@@ -1,0 +1,176 @@
+{
+  "name": "PostGenerator",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "3e62756c-a842-49da-ad46-28bfbbc43213",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "53272114-aaa9-448f-9790-66796db9346f",
+      "name": "Webhook",
+      "webhookId": "3e62756c-a842-49da-ad46-28bfbbc43213"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic-  {{ $json.body.topic }}\nWriting Style- {{ $json.body.writingStyle }}\npost category- {{ $json.body.postCategory }}\npost length- {{ $json.body.postLength }}\n",
+        "options": {
+          "systemMessage": "=Persona:\nYou are an expert LinkedIn Ghostwriter who has written 2,000+ viral posts for CEOs, founders, creators, and tech professionals. You deeply understand LinkedIn algorithms, storytelling, hooks, audience psychology, and content formats that drive millions of views. You specialise in creating scroll-stopping hooks, emotional storytelling, authority-building insights, and CTAs that spark engagement.\n\nTask:\nCreate a viral-style LinkedIn post based on:\nUse user messsage to get the details on Topic, style, length etc for the post.\n\nDon't use \"# and *\"\" for headers and in the post. Don't use em-dashes \"--\"\n\nYour job is to craft a LinkedIn post that maximizes reach, engagement, and shares through strong hooks, relatable narratives, crisp formatting, and powerful CTAs.\n\nContext:\nThe post should feel like it was written by a top LinkedIn creator. It must capture attention in the first 2–3 seconds, use pattern-interrupt techniques, create emotional resonance, and deliver real value. Add insights, examples, frameworks, or micro-stories depending on the post type. The goal is to trigger comments, saves, and reposts.\n\nFormat:\nFollow this exact structure:\n\nDon't use \"# and *\"\" for headers and in the post. Don't use em-dashes \"--\"\n\nHook (1–2 lines, punchy, curiosity-building, scroll-stopping)\n\nBody (story, insight, or breakdown depending on the post type)\n\nValue Section (actionable takeaways, lessons, or frameworks)\n\nCTA (ask a question that encourages comments, or invite people to share their thoughts)\n\nKeep paragraphs short (1–2 lines max).\n\nUse simple English, no jargon.\n\nAdd spacing for readability.\n\nDon't use # and * for headers. \n\nStricly Don't use em-dashes \n\nAdd few hashtags related to that topic maximum 4 or 5\n\nTone:\nConversational, bold, authoritative, and engaging—like top LinkedIn creators. No fluff. Every line should deliver value, emotion, or curiosity.\n\nOutput:\nA polished viral-style LinkedIn post ready to publish.\nDon't use em dashes. I want plain english post without em dashes "
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        352,
+        0
+      ],
+      "id": "f18e25fc-05e0-46f6-a255-7ad12212b67c",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        704,
+        0
+      ],
+      "id": "b69e1af9-435f-4276-a2bf-4914559ddadb",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        256,
+        160
+      ],
+      "id": "14e44c72-1bc0-4114-b573-a253ee365dbe",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "T77PfyK6XMPnYORL",
+          "name": "OpenRouter account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ce5269b8-2c2a-4ae9-8e9d-ee99714ee33c",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        208,
+        400
+      ],
+      "id": "46a39537-bb16-4024-a029-3464610a0959",
+      "name": "Webhook1",
+      "webhookId": "ce5269b8-2c2a-4ae9-8e9d-ee99714ee33c"
+    },
+    {
+      "parameters": {
+        "sendTo": "vranwikar@gmail.com",
+        "subject": "My Post",
+        "message": "={{ $json.body.postContent }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        400
+      ],
+      "id": "93be9873-df28-48d2-ac9f-dc97f5d1f3ab",
+      "name": "Send a message",
+      "webhookId": "4952e5fe-06a4-4c20-8898-9d9d019183d3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "tviUD2NhQtiFHkSP",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a6a7f347-93e9-4416-a8f1-088ed33a505a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "104b2c23ba917d062f27e0aecabda078684bd9aa99067abf80b4e6b549f47ebf"
+  },
+  "id": "q8uaDvm3pklPkLs4",
+  "tags": []
+}
